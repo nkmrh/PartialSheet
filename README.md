@@ -83,13 +83,12 @@ To use the **Partial Sheet** you need to follow just three simple steps
 1. Add a PartialSheet to the current view. You should attach it to your Root View.
 
 ```Swift
- let contentView = ContentView()
-    .attachPartialSheetToRoot()
+let contentView = ContentView()
+                    .attachPartialSheetToRoot()
+    
 if let windowScene = scene as? UIWindowScene {
     let window = UIWindow(windowScene: windowScene)
-    window.rootViewController = UIHostingController(
-        rootView: contentView
-    )
+    window.rootViewController = UIHostingController(rootView: contentView)
     self.window = window
     window.makeKeyAndVisible()
 }
@@ -109,7 +108,7 @@ If you want a starting point in the **Examples** directory you can find some exa
 
 When using pickers it is needed to register an onTapGesture. This some how makes the picker being able to reconize the drag before the dragGesture on the sheet.
 
-```
+```Swift
 struct PickerSheetView: View {
     var strengths = ["Mild", "Medium", "Mature"]
     @State private var selectedStrength = 0
