@@ -8,25 +8,23 @@
 
 import SwiftUI
 
-
 struct TextfieldExample: View {
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
-    
+    @State private var isSheetPresented = false
+
     var body: some View {
         HStack {
             Spacer()
             Button(action: {
-                self.partialSheetManager.showPartialSheet({
-                    print("text sheet dismissed")
-                }) {
-                    SheetTextFieldView()
-                }
+                isSheetPresented = true
             }, label: {
                 Text("Display the Partial Shehet")
             })
                 .padding()
             Spacer()
         }
+        .partialSheet(isPresented: $isSheetPresented, content: {
+            SheetTextFieldView(isSheetPresented: $isSheetPresented)
+        })
         .navigationBarTitle("Textfield Example")
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -37,7 +35,7 @@ struct TextfieldExample_Previews: PreviewProvider {
         NavigationView {
             TextfieldExample()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }
@@ -46,29 +44,24 @@ struct TextfieldExample_Previews: PreviewProvider {
 struct SheetTextFieldView: View {
     @State private var longer: Bool = false
     @State private var text: String = "some text"
-    
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
+    @Binding var isSheetPresented: Bool
 
-    
     var body: some View {
         VStack {
             Group {
                 Text("Settings Panel")
                     .font(.headline)
-                
                 TextField("TextField", text: self.$text)
                     .padding(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(Color(UIColor.systemGray2), lineWidth: 1)
                 )
-                
                 Toggle(isOn: self.$longer) {
                     Text("Advanced")
                 }
-                
                 Button("Close Button") {
-                    self.partialSheetManager.closePartialSheet()
+                    isSheetPresented = false
                 }
             }
             .padding()
@@ -82,4 +75,3 @@ struct SheetTextFieldView: View {
         }
     }
 }
-

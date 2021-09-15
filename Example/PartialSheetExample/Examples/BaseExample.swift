@@ -8,25 +8,22 @@
 
 import SwiftUI
 
-struct NormalExample: View {
+struct BaseExample: View {
+    @State private var isSheetPresented = false
 
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
-    
     var body: some View {
         HStack {
             Spacer()
             Button(action: {
-                self.partialSheetManager.showPartialSheet({
-                     print("normal sheet dismissed")
-                }) {
-                     SheetView()
-                }
+                isSheetPresented = true
             }, label: {
                 Text("Display the Partial Sheet")
             })
                 .padding()
             Spacer()
         }
+        .partialSheet(isPresented: $isSheetPresented,
+                      content: SheetView.init)
         .navigationBarTitle("Normal Example")
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -35,9 +32,9 @@ struct NormalExample: View {
 struct NormalExample_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            NormalExample()
+            BaseExample()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }
@@ -46,7 +43,6 @@ struct NormalExample_Previews: PreviewProvider {
 struct SheetView: View {
     @State private var longer: Bool = false
     @State private var text: String = "some text"
-
 
     var body: some View {
         VStack {
@@ -74,5 +70,6 @@ struct SheetView: View {
                 .frame(height: 200)
             }
         }
+        .padding(.vertical)
     }
 }

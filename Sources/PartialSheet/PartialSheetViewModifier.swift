@@ -12,55 +12,50 @@ import Combine
 /// This is the modifier for the Partial Sheet
 @available(iOSApplicationExtension, unavailable)
 struct PartialSheet: ViewModifier {
-    
-    // MARK: - Public Properties
-
-    /// The Partial Sheet Style configuration
-    var style: PartialSheetStyle
-    
     // MARK: - Private Properties
 
-    @EnvironmentObject private var manager: PartialSheetManager
+    @EnvironmentObject var manager: PartialSheetManager
+    @Environment(\.safeAreaInsets) var safeAreaInsets
 
     /// The rect containing the presenter
-    @State private var presenterContentRect: CGRect = .zero
+    @State var presenterContentRect: CGRect = .zero
     
     /// The rect containing the sheet content
-    @State private var sheetContentRect: CGRect = .zero
+    @State var sheetContentRect: CGRect = .zero
     
     /// The offset for keyboard height
-    @State private var keyboardOffset: CGFloat = 0
+    @State var keyboardOffset: CGFloat = 0
     
     /// The offset for the drag gesture
-    @State private var dragOffset: CGFloat = 0
+    @State var dragOffset: CGFloat = 0
 
     /// The point for the top anchor
-    private var topAnchor: CGFloat {
-        let topSafeArea = (UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0)
-        let bottomSafeArea = (UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0)
+    var topAnchor: CGFloat {
+        let topSafeArea =  safeAreaInsets.top
+        let bottomSafeArea = safeAreaInsets.bottom
         
         let calculatedTop =
             presenterContentRect.height +
             topSafeArea +
             bottomSafeArea -
             sheetContentRect.height -
-            handlerSectionHeight
+            handleSectionHeight
           
-        guard calculatedTop < style.minTopDistance else {
+        guard calculatedTop < manager.style.minTopDistance else {
             return calculatedTop
         }
         
-        return style.minTopDistance
+        return manager.style.minTopDistance
     }
     
     /// The he point for the bottom anchor
-    private var bottomAnchor: CGFloat {
+    var bottomAnchor: CGFloat {
         return UIScreen.main.bounds.height + 5
     }
     
-    /// The height of the handler bar section
-    private var handlerSectionHeight: CGFloat {
-        switch style.handlerBarStyle {
+    /// The height of the handle bar section
+    var handleSectionHeight: CGFloat {
+        switch manager.style.handleBarStyle {
             case .solid: return 30
             case .none: return 0
         }
@@ -70,7 +65,7 @@ struct PartialSheet: ViewModifier {
     private var sheetPosition: CGFloat {
         if self.manager.isPresented {
             // 20.0 = To make sure we dont go under statusbar on screens without safe area inset
-            let topInset = UIApplication.shared.windows.first?.safeAreaInsets.top ?? 20.0
+            let topInset = safeAreaInsets.top
             let position = self.topAnchor + self.dragOffset - self.keyboardOffset
             
             if position < topInset {
@@ -84,12 +79,13 @@ struct PartialSheet: ViewModifier {
     }
 
     /// Background of sheet
-    private var background: AnyView {
-        switch self.style.background {
+    @ViewBuilder
+    private var background: some View {
+        switch manager.style.background {
         case .solid(let color):
-            return AnyView(color)
+            Rectangle().fill(color)
         case .blur(let effect):
-            return AnyView(BlurEffectView(style: effect).background(Color.clear))
+            Rectangle().fill(effect)
         }
     }
     
@@ -166,7 +162,7 @@ extension PartialSheet {
                     self.manager.isPresented = false
                 }, label: {
                     Image(systemName: "xmark")
-                        .foregroundColor(style.iPadCloseButtonColor)
+                        .foregroundColor(manager.style.iPadCloseButtonColor)
                         .padding(.horizontal)
                         .padding(.top)
                 })
@@ -189,17 +185,18 @@ extension PartialSheet {
 
             if manager.isPresented {
                 Group {
-                    if style.enableCover {
+                    if manager.style.enableCover {
                         Rectangle()
-                            .foregroundColor(style.coverColor)
+                            .foregroundColor(manager.style.coverColor)
                     }
-                    if style.blurEffectStyle != nil {
-                        BlurEffectView(style: style.blurEffectStyle ?? UIBlurEffect.Style.systemChromeMaterial)
-                    }
+//                    if style.blurEffectStyle != nil {
+//                        Rectangle()
+//                            .foregroundColor(style.blurEffectStyle)
+//                    }
                 }
                 .edgesIgnoringSafeArea(.vertical)
                 .onTapGesture {
-                    withAnimation(manager.defaultAnimation) {
+                    withAnimation(manager.slideAnimation) {
                         self.manager.isPresented = false
                         self.dismissKeyboard()
                         self.manager.onDismiss?()
@@ -209,16 +206,16 @@ extension PartialSheet {
             // The SHEET VIEW
             Group {
                 VStack(spacing: 0) {
-                    switch style.handlerBarStyle {
-                    case .solid(let handlerBarColor): // This is the little rounded bar (HANDLER) on top of the sheet
+                    switch manager.style.handleBarStyle {
+                    case .solid(let handleBarColor): // This is the little rounded bar (HANDLER) on top of the sheet
                         VStack {
                             Spacer()
                             RoundedRectangle(cornerRadius: CGFloat(5.0) / 2.0)
                                 .frame(width: 40, height: 5)
-                                .foregroundColor(handlerBarColor)
+                                .foregroundColor(handleBarColor)
                             Spacer()
                         }
-                        .frame(height: handlerSectionHeight)
+                        .frame(height: handleSectionHeight)
                     case .none: EmptyView()
                     }
                     
@@ -234,13 +231,13 @@ extension PartialSheet {
                     Spacer()
                 }
                 .onPreferenceChange(SheetPreferenceKey.self, perform: { (prefData) in
-                    withAnimation(manager.defaultAnimation) {
+                    withAnimation(manager.slideAnimation) {
                         self.sheetContentRect = prefData.first?.bounds ?? .zero
                     }
                 })
                 .frame(width: UIScreen.main.bounds.width)
                 .background(self.background)
-                .cornerRadius(style.cornerRadius)
+                .cornerRadius(manager.style.cornerRadius)
                 .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.13), radius: 10.0)
                 .offset(y: self.sheetPosition)
                 .gesture(drag)
@@ -249,113 +246,7 @@ extension PartialSheet {
     }
 }
 
-// MARK: - Drag Gesture & Handler
-@available(iOSApplicationExtension, unavailable)
-extension PartialSheet {
-
-    /// Create a new **DragGesture** with *updating* and *onEndend* func
-    private func dragGesture() -> _EndedGesture<_ChangedGesture<DragGesture>> {
-        DragGesture(minimumDistance: 0.1, coordinateSpace: .local)
-            .onChanged(onDragChanged)
-            .onEnded(onDragEnded)
-    }
-    
-    private func onDragChanged(drag: DragGesture.Value) {
-        self.dismissKeyboard()
-        let yOffset = drag.translation.height
-        let threshold = CGFloat(-50)
-        let stiffness = CGFloat(0.3)
-        if yOffset > threshold {
-            dragOffset = drag.translation.height
-        } else if
-            // if above threshold and belove ScreenHeight make it elastic
-            -yOffset + self.sheetContentRect.height <
-                UIScreen.main.bounds.height + self.handlerSectionHeight
-        {
-            let distance = yOffset - threshold
-            let translationHeight = threshold + (distance * stiffness)
-            dragOffset = translationHeight
-        }
-    }
-    
-    /// The method called when the drag ends. It moves the sheet in the correct position based on the last drag gesture
-    private func onDragEnded(drag: DragGesture.Value) {
-        /// The drag direction
-        let verticalDirection = drag.predictedEndLocation.y - drag.location.y
-        
-        // Set the correct anchor point based on the vertical direction of the drag
-        if verticalDirection > 1 {
-            DispatchQueue.main.async {
-                withAnimation(manager.defaultAnimation) {
-                    dragOffset = 0
-                    self.manager.isPresented = false
-                    self.manager.onDismiss?()
-                }
-            }
-        } else if verticalDirection < 0 {
-            withAnimation(manager.defaultAnimation) {
-                dragOffset = 0
-                self.manager.isPresented = true
-            }
-        } else {
-            /// The current sheet position
-            let cardTopEdgeLocation = topAnchor + drag.translation.height
-            
-            // Get the closest anchor point based on the current position of the sheet
-            let closestPosition: CGFloat
-            
-            if (cardTopEdgeLocation - topAnchor) < (bottomAnchor - cardTopEdgeLocation) {
-                closestPosition = topAnchor
-            } else {
-                closestPosition = bottomAnchor
-            }
-            
-            withAnimation(manager.defaultAnimation) {
-                dragOffset = 0
-                self.manager.isPresented = (closestPosition == topAnchor)
-                if !manager.isPresented {
-                    manager.onDismiss?()
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Keyboard Handlers Methods
-@available(iOSApplicationExtension, unavailable)
-extension PartialSheet {
-
-    /// Add the keyboard offset
-    private func keyboardShow(notification: Notification) {
-        let endFrame = UIResponder.keyboardFrameEndUserInfoKey
-        if let rect: CGRect = notification.userInfo![endFrame] as? CGRect {
-            let height = rect.height
-            let bottomInset = UIApplication.shared.windows.first?.safeAreaInsets.bottom
-            withAnimation(manager.defaultAnimation) {
-                self.keyboardOffset = height - (bottomInset ?? 0)
-            }
-        }
-    }
-
-    /// Remove the keyboard offset
-    private func keyboardHide(notification: Notification) {
-        DispatchQueue.main.async {
-            withAnimation(manager.defaultAnimation) {
-                self.keyboardOffset = 0
-            }
-        }
-    }
-    
-    /// Dismiss the keyboard
-    private func dismissKeyboard() {
-        let resign = #selector(UIResponder.resignFirstResponder)
-        DispatchQueue.main.async {
-            UIApplication.shared.sendAction(resign, to: nil, from: nil, for: nil)
-        }
-    }
-}
-
-// MARK: - PreferenceKeys Handlers
+// MARK: - PreferenceKeys Handles
 @available(iOSApplicationExtension, unavailable) 
 extension PartialSheet {
 
@@ -380,48 +271,4 @@ extension PartialSheet {
         let bounds: CGRect
     }
 
-}
-
-struct PartialSheetAddView<Base: View, InnerContent: View>: View {
-    @EnvironmentObject var partialSheetManager: PartialSheetManager
-    
-    @Binding var isPresented: Bool
-    let content: () -> InnerContent
-    let base: Base
-    
-    @State var model = Model()
-
-    var body: some View {
-        if #available(iOS 14.0, *) {
-            return AnyView(base
-                .onChange(of: isPresented, perform: {_ in updateContent() }))
-        } else {
-            if model.update(value: isPresented) {
-                DispatchQueue.main.async(execute: updateContent)
-            }
-            return AnyView(base)
-        }
-    }
-    
-    func updateContent() {
-        partialSheetManager.updatePartialSheet(isPresented: isPresented, content: content, onDismiss: {
-            self.isPresented = false
-        })
-    }
-    
-    // hack around .onChange not being available in iOS13
-    class Model {
-        private var savedValue: Bool?
-        func update(value: Bool) -> Bool {
-            guard value != savedValue else { return false }
-            savedValue = value
-            return true
-        }
-    }
-}
-
-public extension View {
-    func partialSheet<Content: View>(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> some View {
-        PartialSheetAddView(isPresented: isPresented, content: content, base: self)
-    }
 }

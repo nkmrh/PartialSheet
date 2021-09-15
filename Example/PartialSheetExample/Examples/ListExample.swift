@@ -9,20 +9,21 @@
 import SwiftUI
 
 struct ListExample: View {
-    @EnvironmentObject var partialSheetManager: PartialSheetManager
+    @State private var isSheetPresented = false
+    @State private var selectedIndex: Int = 0
 
     var body: some View {
         List(0...12, id: \.self) { (index) in
             Button(action: {
-                self.partialSheetManager.showPartialSheet({
-                    print("dismiss sheet for item \(index)")
-                }) {
-                     Text("Modify item \(index)")
-                }
+                selectedIndex = index
+                isSheetPresented = true
             }, label: {
                 Text("Item: \(index)")
             })
         }
+        .partialSheet(isPresented: $isSheetPresented, content: {
+            Text("Item: \(selectedIndex)")
+        })
         .navigationBarTitle(Text("List Example"))
     }
 }
@@ -32,7 +33,7 @@ struct ListExample_Previews: PreviewProvider {
         NavigationView {
             ListExample()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }

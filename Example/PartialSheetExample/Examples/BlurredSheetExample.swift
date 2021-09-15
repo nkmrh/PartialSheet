@@ -9,11 +9,8 @@
 import SwiftUI
 
 struct BlurredExample: View {
-    
-    // Adding a new sheet manager and style locally - *this is not recommended (it's just for the example sake)*
-    // - recommended way is adding one global sheet as per the documentation.
-    let sheetManager: PartialSheetManager = PartialSheetManager()
-    let sheetStyle = PartialSheetStyle(background: .blur(.systemMaterialDark),
+    @State var isSheetPresented = false
+    let sheetStyle = PartialSheetStyle(background: .blur(.ultraThinMaterial),
                                        accentColor: Color(UIColor.systemGray2),
                                        enableCover: true,
                                        coverColor: Color.black.opacity(0.4),
@@ -21,16 +18,12 @@ struct BlurredExample: View {
                                        cornerRadius: 10,
                                        minTopDistance: 350
     )
-        
+
     var body: some View {
         VStack {
             Spacer()
             Button(action: {
-                self.sheetManager.showPartialSheet({
-                    print("BlurredExample sheet dismissed")
-                }) {
-                    BlurredSheetView()
-                }
+                isSheetPresented = true
             }, label: {
                 Text("Display the BlurredExample Sheet")
             })
@@ -43,10 +36,10 @@ struct BlurredExample: View {
                 Rectangle().foregroundColor(Color.yellow).frame(width: 75, height: 75)
             }
         }
+        .partialSheet(isPresented: $isSheetPresented, style: sheetStyle,
+                      content: BlurredSheetView.init)
         .navigationBarTitle("BlurredExample Example")
         .navigationViewStyle(StackNavigationViewStyle())
-        .addPartialSheet(style: self.sheetStyle)
-        .environmentObject(self.sheetManager)
     }
 }
 
@@ -55,7 +48,7 @@ struct BlurredExample_Previews: PreviewProvider {
         NavigationView {
             BlurredSheetView()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }
@@ -63,7 +56,7 @@ struct BlurredExample_Previews: PreviewProvider {
 
 struct BlurredSheetView: View {
     @State private var selectedStrength = 0
-    
+
     var body: some View {
         VStack {
             Group {
@@ -81,4 +74,3 @@ struct BlurredSheetView: View {
         }
     }
 }
-

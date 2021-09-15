@@ -9,24 +9,21 @@
 import SwiftUI
 
 struct DatePickerExample: View {
-    
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
-    
+    @State private var isSheetPresented = false
+
     var body: some View {
         HStack {
             Spacer()
             Button(action: {
-                self.partialSheetManager.showPartialSheet({
-                    print("DatePickerExample sheet dismissed")
-                }) {
-                    DatePickerSheetView()
-                }
+                isSheetPresented = true
             }, label: {
                 Text("Display the DatePickerExample Sheet")
             })
             .padding()
             Spacer()
         }
+        .partialSheet(isPresented: $isSheetPresented,
+                      content: DatePickerSheetView.init)
         .navigationBarTitle("DatePickerExample Example")
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -37,7 +34,7 @@ struct DatePickerExample_Previews: PreviewProvider {
         NavigationView {
             DatePickerSheetView()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }
@@ -45,7 +42,7 @@ struct DatePickerExample_Previews: PreviewProvider {
 
 struct DatePickerSheetView: View {
     @State private var date: Date = Date()
-    
+
     var body: some View {
         VStack {
             VStack {

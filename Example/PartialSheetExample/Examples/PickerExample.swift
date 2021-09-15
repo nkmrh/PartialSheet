@@ -9,24 +9,21 @@
 import SwiftUI
 
 struct PickerExample: View {
-    
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
-    
+    @State private var isSheetPresented = false
+
     var body: some View {
         HStack {
             Spacer()
             Button(action: {
-                self.partialSheetManager.showPartialSheet({
-                    print("PickerExample sheet dismissed")
-                }) {
-                    PickerSheetView()
-                }
+                isSheetPresented = true
             }, label: {
                 Text("Display the PickerExample Sheet")
             })
             .padding()
             Spacer()
         }
+        .partialSheet(isPresented: $isSheetPresented,
+                      content: PickerSheetView.init)
         .navigationBarTitle("PickerExample Example")
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -37,7 +34,7 @@ struct PickerExample_Previews: PreviewProvider {
         NavigationView {
             PickerSheetView()
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }

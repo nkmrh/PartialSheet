@@ -1,5 +1,5 @@
 //
-//  HandlerBarFreeExample.swift
+//  HandleBarFreeExample.swift
 //  PartialSheetExample
 //
 //  Created by Gijs van Veen on 12/05/2021.
@@ -8,13 +8,10 @@
 
 import SwiftUI
 
-struct HandlerBarFreeExample: View {
-    
-    // Adding a new sheet manager and style locally - *this is not recommended (it's just for the example sake)*
-    // - recommended way is adding one global sheet as per the documentation.
-    let sheetManager: PartialSheetManager = PartialSheetManager()
+struct HandleBarFreeExample: View {
+    @State private var isSheetPresented = false
     let sheetStyle = PartialSheetStyle(background: .solid(Color(UIColor.tertiarySystemBackground)),
-                                       handlerBarStyle: .none,
+                                       handleBarStyle: .none,
                                        iPadCloseButtonColor: Color(UIColor.systemGray2),
                                        enableCover: true,
                                        coverColor: Color.black.opacity(0.4),
@@ -22,66 +19,59 @@ struct HandlerBarFreeExample: View {
                                        cornerRadius: 10,
                                        minTopDistance: 110
     )
-        
+
     var body: some View {
         VStack {
             Spacer()
             Button(action: {
-                self.sheetManager.showPartialSheet({
-                    print("HandlerBarFreeExample sheet dismissed")
-                }) {
-                    HandlerBarFreeSheetView()
-                }
+                isSheetPresented = true
             }, label: {
-                Text("Display the HandlerBarFreeExample Sheet")
+                Text("Display the HandleBarFreeExample Sheet")
             })
-            .padding()
+                .padding()
             Spacer()
         }
-        .navigationBarTitle("HandlerBarFreeExample Example")
+        .partialSheet(isPresented: $isSheetPresented, style: sheetStyle,
+                      content: {
+            HandleBarFreeSheetView(isSheetPresented: $isSheetPresented)
+        })
+        .navigationBarTitle("HandleBarFreeExample Example")
         .navigationViewStyle(StackNavigationViewStyle())
-        .addPartialSheet(style: self.sheetStyle)
-        .environmentObject(self.sheetManager)
     }
 }
 
-struct HandlerBarFreeExample_Previews: PreviewProvider {
+struct HandleBarFreeExample_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            HandlerBarFreeSheetView()
+            HandleBarFreeSheetView(isSheetPresented: .constant(true))
         }
-        .addPartialSheet()
+        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
         .environmentObject(PartialSheetManager())
     }
 }
 
-struct HandlerBarFreeSheetView: View {
+struct HandleBarFreeSheetView: View {
     @State private var longer: Bool = false
     @State private var text: String = "some text"
-    
-    @EnvironmentObject var partialSheetManager : PartialSheetManager
+    @Binding var isSheetPresented: Bool
 
-    
     var body: some View {
         VStack {
             Group {
                 Text("Settings Panel")
                     .font(.headline)
-                
                 TextField("TextField", text: self.$text)
                     .padding(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(Color(UIColor.systemGray2), lineWidth: 1)
-                )
-                
+                    )
                 Toggle(isOn: self.$longer) {
                     Text("Advanced")
                 }
-                
                 Button("Close Button") {
-                    self.partialSheetManager.closePartialSheet()
+                    isSheetPresented = false
                 }
             }
             .padding()
