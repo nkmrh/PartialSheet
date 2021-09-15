@@ -14,7 +14,7 @@ internal enum DeviceType {
     case mac
 }
 
-internal var deviceType: DeviceType = {
+var deviceType: DeviceType = {
 #if targetEnvironment(macCatalyst)
     return .mac
 #else
@@ -26,7 +26,7 @@ internal var deviceType: DeviceType = {
 #endif
 }()
 
-internal extension View {
+extension View {
     
     @ViewBuilder func ifIs<T>(_ condition: Bool, transform: (Self) -> T) -> some View where T: View {
         if condition {

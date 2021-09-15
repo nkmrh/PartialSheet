@@ -9,9 +9,7 @@
 import SwiftUI
 
 // MARK: - Drag Gesture & Handler
-@available(iOSApplicationExtension, unavailable)
 extension PartialSheet {
-
     /// Create a new **DragGesture** with *updating* and *onEndend* func
     func dragGesture() -> _EndedGesture<_ChangedGesture<DragGesture>> {
         DragGesture(minimumDistance: 0.1, coordinateSpace: .local)

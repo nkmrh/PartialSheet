@@ -65,7 +65,6 @@ struct ContentView: View {
             }
             .navigationBarTitle("Partial Sheet")
         }
-        .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }

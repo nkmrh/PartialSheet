@@ -9,8 +9,7 @@
 import Combine
 import SwiftUI
 /**
- The Partial Sheet Manager helps to handle the Partial Sheet when you have many view layers.
- 
+ The Partial Sheet Manager helps to handle the Partial Sheet when there are many view layers.
  Make sure to pass an instance of this manager as an **environmentObject** to your root view in your Scene Delegate:
  ```
  let sheetManager: PartialSheetManager = PartialSheetManager()
@@ -20,7 +19,7 @@ import SwiftUI
  )
  ```
  */
-public class PartialSheetManager: ObservableObject {
+class PartialSheetManager: ObservableObject {
     
     /// Published var to present or hide the partial sheet
     @Published var isPresented: Bool = false {
@@ -48,12 +47,12 @@ public class PartialSheetManager: ObservableObject {
      Modify this property to change the slide in/out animation.
      You can restore the default one calling **restoreDefaultSlideAnimation**
      **/
-    public var slideAnimation: Animation?
+    var slideAnimation: Animation?
     
     /// The Partial Sheet Style configuration
     var style: PartialSheetStyle = .defaultStyle()
     
-    public init() {
+    init() {
         content = EmptyView().eraseToAnyView()
         slideAnimation = defaultSlideAnimation
     }
@@ -66,6 +65,7 @@ public class PartialSheetManager: ObservableObject {
      */
     func updatePartialSheet<T>(isPresented: Bool? = nil,
                                style: PartialSheetStyle? = nil,
+                               slideAnimation: Animation? = nil,
                                content: (() -> T)? = nil,
                                onDismiss: (() -> Void)? = nil) where T: View {
         if let content = content {
@@ -77,15 +77,12 @@ public class PartialSheetManager: ObservableObject {
         if let onDismiss = onDismiss {
             self.onDismiss = onDismiss
         }
+        self.slideAnimation = slideAnimation ?? defaultSlideAnimation
+
         if let isPresented = isPresented {
             withAnimation(slideAnimation) {
                 self.isPresented = isPresented
             }
         }
-    }
-    
-    /// Restore the default slide in/out animation
-    func restoreDefaultSlideAnimation() {
-        slideAnimation = defaultSlideAnimation
     }
 }

@@ -12,7 +12,7 @@
 
 A custom SwiftUI modifier to present a Partial Modal Sheet based on his content size.
 
-**Version 2.0 has been released, there are a lot of breaking changes, make sure to read the guide before update!**
+**Version 3.0 has been released, there are a lot of breaking changes, make sure to read the guide before update!**
 
 
 ## Index
@@ -40,32 +40,34 @@ A custom SwiftUI modifier to present a Partial Modal Sheet based on his content 
 #### Availables
 - \[x]  Slidable and dismissable with drag gesture
 - \[x]  Variable height based on his content
+- \[x]  Callable from any view in the hierarchy with one modifier
 - \[x]  Customizable colors
-- \[x] Keyboard compatibility
+- \[x]  Material blurred background
+- \[x]  Keyboard compatibility
 - \[x]  Landscape compatibility
-- \[x]  iOS compatibility
-- \[x] iPad compatibility
-- \[x] Mac compatibility
+- \[x]  iPhone compatibility (iOS 15.0 +)
+- \[x]  iPad compatibility (iOS 15.0 +)
+- \[x]  Mac compatibility (MacOS 12.0 +)
+- \[x]  Version 2 compatibile with older OS
 
 #### Nice to have
 - \[ ] ScrollView and List compatibility: as soon as Apple adds some API to handle better ScrollViews
 
-## Version 2
+## Version 3
 The new version brings a lot of breaking changes and a lot of improvments:
-- The Partial Sheet can now be called from any view in the *navigation stack*
-- The Partial Sheet can now be called from any item inside a *List*
-- The Partial Sheet is now handled as an *environment object* making easy to display and close it.
+- The Partial Sheet now is more SwiftUI. To use it you will semply need to call a modifier directly from the view.
 
 ## Installation
 
 #### Requirements
-- iOS 13.0+ / macOS 10.15+
+- iOS 15.0+ / macOS 12.0+
 - Xcode 11.2+
 - Swift 5+
+- If you need to be compatible with a previous version of macos and ios check the version 2
 
 #### Via Swift Package Manager
 
-In Xcode 11 or grater, in you project, select: `File > Swift Packages > Add Pacakage Dependency`.
+In Xcode 13 or grater, in your project, select: `File > Swift Packages > Add Pacakage Dependency`.
 
 In the search bar type **PartialSheet** and when you find the package, with the **next** button you can proceed with the installation.
 
@@ -78,15 +80,11 @@ You can do that under the **Preferences** panel of your Xcode, in the **Accounts
 
 To use the **Partial Sheet** you need to follow just three simple steps
 
-1. Add a **Partial Sheet Manager** instance as an *environment object* to your Root View in you *SceneDelegate*
-```Swift
-// 1.1 Create the manager
-let sheetManager: PartialSheetManager = PartialSheetManager()
-let contentView = ContentView()
-    // 1.2 Add the manager as environmentObject
-    .environmentObject(sheetManager)
+1. Add a PartialSheet to the current view. You should attach it to your Root View.
 
-//Common SwiftUI code to add the rootView in your rootViewController
+```Swift
+ let contentView = ContentView()
+    .attachPartialSheetToRoot()
 if let windowScene = scene as? UIWindowScene {
     let window = UIWindow(windowScene: windowScene)
     window.rootViewController = UIHostingController(
@@ -99,114 +97,13 @@ if let windowScene = scene as? UIWindowScene {
 2. Add the **Partial View** to your *Root View*, and if you want give it a style. In your RootView file at the end of the builder add the following modifier:
 
 ```Swift
-struct ContentView: View {
-
-    var body: some View {
-       ...
-       .addPartialSheet(style: <PartialSheetStyle>)
-    }
-}
+ view
+     .partialSheet(isPresented: $isPresented) {
+        Text("Content of the Sheet")
+     }
 ```
 
-3. In anyone of your views add a reference to the *environment object* and than just call the `showPartialSheet<T>(_ onDismiss: (() -> Void)? = nil, @ViewBuilder content: @escaping () -> T) where T: View` func whenever you want like this:
-
-```Swift
-@EnvironmentObject var partialSheetManager: PartialSheetManager
-
-...
-
-Button(action: {
-    self.partialSheetManager.showPartialSheet({
-        print("Partial sheet dismissed")
-    }) {
-         Text("This is a Partial Sheet")
-    }
-}, label: {
-    Text("Show sheet")
-})
-```
-
-You can also show the Partial Sheet using a *view modifier*:
-```Swift
-@State var isSheetShown = false
-
-...
-
-Button(action: {
-    self.isSheetShown = true
-}, label: {
-    Text("Display the ViewModifier sheet")
-})
-.partialSheet(isPresented: $isSheetShown) {
-    Text("This is a Partial Sheet")
-}
-```
-
-If you want a starting point copy in your SceneDelegate and in your ContentView files the following code:
-
-1. SceneDelegate:
-
-```Swift
-func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-    let sheetManager: PartialSheetManager = PartialSheetManager()
-    let contentView = ContentView()
-        .environmentObject(sheetManager)
-    if let windowScene = scene as? UIWindowScene {
-        let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UIHostingController(
-            rootView: contentView
-        )
-        self.window = window
-        window.makeKeyAndVisible()
-    }
-}
-```
-
-2. ContentView:
-
-```Swift
-import SwiftUI
-import PartialSheet
-
-struct ContentView: View {
-
-    @EnvironmentObject var partialSheet : PartialSheetManager
-
-    var body: some View {
-        NavigationView {
-            VStack(alignment: .center) {
-                Spacer()
-                    Button(action: {
-                        self.partialSheet.showPartialSheet({
-                            print("dismissed")
-                        }) {
-                            Text("Partial Sheet")
-                        }
-                    }, label: {
-                        Text("Show Partial Sheet")
-                    })
-                Spacer()
-            }
-            .navigationBarTitle("Partial Sheet")
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .addPartialSheet()
-    }
-}
-
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
-```
-Remember to always add `import PartialSheet` in every file you want to use the PartialSheet.
-
-In the **Example** directory you can find more examples with more complex structures.
-
-
+If you want a starting point in the **Examples** directory you can find some examples with different boilerplates.
 
 ###  Using Pickers
 

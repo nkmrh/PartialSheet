@@ -10,7 +10,6 @@ import SwiftUI
 import Combine
 
 /// This is the modifier for the Partial Sheet
-@available(iOSApplicationExtension, unavailable)
 struct PartialSheet: ViewModifier {
     // MARK: - Private Properties
 
@@ -148,7 +147,6 @@ struct PartialSheet: ViewModifier {
 }
 
 //MARK: - Platfomr Specific Sheet Builders
-@available(iOSApplicationExtension, unavailable)
 extension PartialSheet {
 
     //MARK: - Mac and iPad Sheet Builder
@@ -247,7 +245,6 @@ extension PartialSheet {
 }
 
 // MARK: - PreferenceKeys Handles
-@available(iOSApplicationExtension, unavailable) 
 extension PartialSheet {
 
     /// Preference Key for the Sheet Presener

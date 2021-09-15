@@ -9,9 +9,7 @@
 import SwiftUI
 
 // MARK: - Keyboard Handles Methods
-@available(iOSApplicationExtension, unavailable)
 extension PartialSheet {
-
     /// Add the keyboard offset
     func keyboardShow(notification: Notification) {
         let endFrame = UIResponder.keyboardFrameEndUserInfoKey

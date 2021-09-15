@@ -13,8 +13,9 @@ struct PartialSheetManagerWrapper<Parent: View, SheetContent: View>: View {
     @EnvironmentObject var partialSheetManager: PartialSheetManager
     
     @Binding var isPresented: Bool
-    let content: () -> SheetContent
     let style: PartialSheetStyle
+    let slideAnimation: Animation?
+    let content: () -> SheetContent
     let parent: Parent
     
     var body: some View {
@@ -23,8 +24,8 @@ struct PartialSheetManagerWrapper<Parent: View, SheetContent: View>: View {
     }
     
     func updateContent() {
-        partialSheetManager.style = style
-        partialSheetManager.updatePartialSheet(isPresented: isPresented, content: content, onDismiss: {
+        partialSheetManager.updatePartialSheet(isPresented: isPresented, style: style,
+                                               slideAnimation: slideAnimation, content: content, onDismiss: {
             self.isPresented = false
         })
     }
