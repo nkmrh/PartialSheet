@@ -31,12 +31,10 @@ struct PartialSheet: ViewModifier {
     /// The point for the top anchor
     var topAnchor: CGFloat {
         let topSafeArea =  safeAreaInsets.top
-        let bottomSafeArea = safeAreaInsets.bottom
-        
+
         let calculatedTop =
             presenterContentRect.height +
-            topSafeArea +
-            bottomSafeArea -
+            topSafeArea -
             sheetContentRect.height -
             handleSectionHeight
           
@@ -187,10 +185,6 @@ extension PartialSheet {
                         Rectangle()
                             .foregroundColor(manager.style.coverColor)
                     }
-//                    if style.blurEffectStyle != nil {
-//                        Rectangle()
-//                            .foregroundColor(style.blurEffectStyle)
-//                    }
                 }
                 .edgesIgnoringSafeArea(.vertical)
                 .onTapGesture {
@@ -205,7 +199,7 @@ extension PartialSheet {
             Group {
                 VStack(spacing: 0) {
                     switch manager.style.handleBarStyle {
-                    case .solid(let handleBarColor): // This is the little rounded bar (HANDLER) on top of the sheet
+                    case .solid(let handleBarColor):
                         VStack {
                             Spacer()
                             RoundedRectangle(cornerRadius: CGFloat(5.0) / 2.0)
@@ -222,7 +216,8 @@ extension PartialSheet {
                         self.manager.content
                             .background(
                                 GeometryReader { proxy in
-                                    Color.clear.preference(key: SheetPreferenceKey.self, value: [PreferenceData(bounds: proxy.frame(in: .global))])
+                                    Color.clear.preference(key: SheetPreferenceKey.self,
+                                                           value: [PreferenceData(bounds: proxy.frame(in: .global))])
                                 }
                         )
                     }
