@@ -49,7 +49,7 @@ struct AnimationSheetView: View {
                 .background(Color.orange)
                 .cornerRadius(5)
                 .scaleEffect(implicitScale)
-                .animation(.default)
+                .animation(.default, value: implicitScale)
                 .onTapGesture {
                     implicitScale = CGFloat.random(in: 0.5..<1.5)
                 }
