@@ -32,11 +32,11 @@ struct PartialSheet: ViewModifier {
     var topAnchor: CGFloat {
         let topSafeArea =  safeAreaInsets.top
         let calculatedTop =
-            presenterContentRect.height +
-            topSafeArea -
-            sheetContentRect.height -
-            handleSectionHeight
-          
+        presenterContentRect.height +
+        topSafeArea -
+        sheetContentRect.height -
+        handleSectionHeight
+
         guard calculatedTop < manager.style.minTopDistance else {
             return calculatedTop
         }
@@ -52,8 +52,8 @@ struct PartialSheet: ViewModifier {
     /// The height of the handle bar section
     var handleSectionHeight: CGFloat {
         switch manager.style.handleBarStyle {
-            case .solid: return 30
-            case .none: return 0
+        case .solid: return 30
+        case .none: return 0
         }
     }
     
@@ -90,7 +90,7 @@ struct PartialSheet: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             content
-                // if the device type is an iPhone
+            // if the device type is an iPhone
                 .iPhone {
                     $0
                         .background(
@@ -101,7 +101,7 @@ struct PartialSheet: ViewModifier {
                                     value: [PreferenceData(bounds: proxy.frame(in: .global))]
                                 )
                             }
-                    )
+                        )
                         .onAppear{
                             let notifier = NotificationCenter.default
                             let willShow = UIResponder.keyboardWillShowNotification
@@ -114,17 +114,19 @@ struct PartialSheet: ViewModifier {
                                                  object: nil,
                                                  queue: .main,
                                                  using: self.keyboardHide)
-                    }
-                    .onDisappear {
-                        let notifier = NotificationCenter.default
-                        notifier.removeObserver(self)
-                    }
-                    .onPreferenceChange(PresenterPreferenceKey.self, perform: { (prefData) in
-                        self.presenterContentRect = prefData.first?.bounds ?? .zero
-                    })
-            }
-                // if the device type is not an iPhone,
-                // display the sheet content as a normal sheet
+                        }
+                        .onDisappear {
+                            let notifier = NotificationCenter.default
+                            notifier.removeObserver(self)
+                        }
+                        .onPreferenceChange(PresenterPreferenceKey.self, perform: { (prefData) in
+                            DispatchQueue.main.async {
+                                self.presenterContentRect = prefData.first?.bounds ?? .zero
+                            }
+                        })
+                }
+            // if the device type is not an iPhone,
+            // display the sheet content as a normal sheet
                 .iPadOrMac {
                     $0
                         .sheet(isPresented: $manager.isPresented, onDismiss: {
@@ -132,7 +134,7 @@ struct PartialSheet: ViewModifier {
                         }, content: {
                             self.iPadAndMacSheet()
                         })
-            }
+                }
             // if the device type is an iPhone,
             // display the sheet content as a draggableSheet
             if deviceType == .iphone {
@@ -218,13 +220,15 @@ extension PartialSheet {
                                     Color.clear.preference(key: SheetPreferenceKey.self,
                                                            value: [PreferenceData(bounds: proxy.frame(in: .global))])
                                 }
-                        )
+                            )
                     }
                     Spacer()
                 }
                 .onPreferenceChange(SheetPreferenceKey.self, perform: { (prefData) in
-                    withAnimation(manager.slideAnimation) {
-                        self.sheetContentRect = prefData.first?.bounds ?? .zero
+                    DispatchQueue.main.async {
+                        withAnimation(self.manager.slideAnimation) {
+                            self.sheetContentRect = prefData.first?.bounds ?? .zero
+                        }
                     }
                 })
                 .frame(width: UIScreen.main.bounds.width)
