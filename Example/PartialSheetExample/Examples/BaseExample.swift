@@ -70,6 +70,5 @@ struct SheetView: View {
                 .frame(height: 200)
             }
         }
-        .padding(.vertical)
     }
 }

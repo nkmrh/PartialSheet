@@ -31,7 +31,7 @@ struct PartialSheet: ViewModifier {
     /// The point for the top anchor
     var topAnchor: CGFloat {
         let topSafeArea =  safeAreaInsets.top
-
+        
         let calculatedTop =
             presenterContentRect.height +
             topSafeArea -

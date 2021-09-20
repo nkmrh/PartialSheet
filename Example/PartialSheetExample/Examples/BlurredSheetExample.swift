@@ -36,17 +36,18 @@ struct BlurredExample: View {
                 Rectangle().foregroundColor(Color.yellow).frame(width: 75, height: 75)
             }
         }
-        .partialSheet(isPresented: $isSheetPresented, style: sheetStyle,
-                      content: BlurredSheetView.init)
-        .navigationBarTitle("BlurredExample Example")
+        .navigationBarTitle("Blurred Example")
         .navigationViewStyle(StackNavigationViewStyle())
+        .partialSheet(isPresented: $isSheetPresented,
+                      style: sheetStyle,
+                      content: BlurredSheetView.init)
     }
 }
 
 struct BlurredExample_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            BlurredSheetView()
+            BlurredExample()
         }
         .attachPartialSheetToRoot()
         .navigationViewStyle(StackNavigationViewStyle())
@@ -69,6 +70,7 @@ struct BlurredSheetView: View {
                 Text("We also set a minTopDistance").font(.subheadline).foregroundColor(Color.white)
                 Text("The background of the sheet is blurred").font(.subheadline).foregroundColor(Color.white)
                 Text("We also set a minTopDistance").font(.subheadline).foregroundColor(Color.white)
+                Spacer()
             }
             .padding()
         }
