@@ -32,6 +32,10 @@ struct ContentView: View {
 
                 List {
                     NavigationLink(
+                        destination: InnerListExample(),
+                        label: {Text("InnerList Example")
+                    })
+                    NavigationLink(
                         destination: NormalExample(),
                         label: {Text("Normal Example")
                     })
@@ -67,10 +71,10 @@ struct ContentView: View {
                         destination: AnimationContentExample(),
                         label: {Text("AnimationContent Example")
                     })
-                    NavigationLink(
-                        destination: HandlerBarFreeExample(),
-                        label: {Text("HandlerBarFree Example")
-                    })
+//                    NavigationLink(
+//                        destination: HandlerBarFreeExample(),
+//                        label: {Text("HandlerBarFree Example")
+//                    })
                 }
                 Spacer()
                 Spacer()

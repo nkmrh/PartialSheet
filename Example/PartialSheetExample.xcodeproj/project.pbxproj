@@ -27,6 +27,7 @@
 		3B9841FC24E880870052A996 /* PickerExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B9841FA24E880870052A996 /* PickerExample.swift */; };
 		3B9841FD24E880870052A996 /* DatePickerExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B9841FB24E880870052A996 /* DatePickerExample.swift */; };
 		3BF874DF24E6F4DE004F4550 /* BlurredSheetExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF874DE24E6F4DE004F4550 /* BlurredSheetExample.swift */; };
+		6420779A270FD19200D1FEFD /* InnerListExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64207799270FD19200D1FEFD /* InnerListExample.swift */; };
 		9C721F222519347C007E46D4 /* AnimationContentExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C721F212519347C007E46D4 /* AnimationContentExample.swift */; };
 		F8E410DE25015F710064D3A6 /* ViewModifierExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E410DD25015F710064D3A6 /* ViewModifierExample.swift */; };
 /* End PBXBuildFile section */
@@ -55,6 +56,7 @@
 		3B9841FA24E880870052A996 /* PickerExample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerExample.swift; sourceTree = "<group>"; };
 		3B9841FB24E880870052A996 /* DatePickerExample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerExample.swift; sourceTree = "<group>"; };
 		3BF874DE24E6F4DE004F4550 /* BlurredSheetExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredSheetExample.swift; sourceTree = "<group>"; };
+		64207799270FD19200D1FEFD /* InnerListExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerListExample.swift; sourceTree = "<group>"; };
 		9C721F212519347C007E46D4 /* AnimationContentExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationContentExample.swift; sourceTree = "<group>"; };
 		F8E410DD25015F710064D3A6 /* ViewModifierExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifierExample.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,6 +85,7 @@
 				F8E410DD25015F710064D3A6 /* ViewModifierExample.swift */,
 				9C721F212519347C007E46D4 /* AnimationContentExample.swift */,
 				20543C8F264BEA7400A6CE96 /* HandlerBarFreeExample.swift */,
+				64207799270FD19200D1FEFD /* InnerListExample.swift */,
 			);
 			path = Examples;
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B9841FC24E880870052A996 /* PickerExample.swift in Sources */,
+				6420779A270FD19200D1FEFD /* InnerListExample.swift in Sources */,
 				01CCB63C244AEE3900F7F67F /* View+IfDeviceType.swift in Sources */,
 				01294541244ED5E5006190B0 /* PartialSheetStyle.swift in Sources */,
 				0174F417245962B80053C454 /* PushNavigationExample.swift in Sources */,
@@ -359,7 +363,7 @@
 				CODE_SIGN_ENTITLEMENTS = PartialSheetExample/PartialSheetExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"PartialSheetExample/Preview Content\"";
-				DEVELOPMENT_TEAM = 23536XD8LD;
+				DEVELOPMENT_TEAM = QA8AV789YN;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = PartialSheetExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -381,7 +385,7 @@
 				CODE_SIGN_ENTITLEMENTS = PartialSheetExample/PartialSheetExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"PartialSheetExample/Preview Content\"";
-				DEVELOPMENT_TEAM = 23536XD8LD;
+				DEVELOPMENT_TEAM = QA8AV789YN;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = PartialSheetExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
